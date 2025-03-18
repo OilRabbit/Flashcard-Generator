@@ -451,3 +451,4 @@ warn_on_root = 1
 #
 #buildozer --profile demo android debug
 android.permissions = READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE
+android.build_tools_version = 33.0.2
