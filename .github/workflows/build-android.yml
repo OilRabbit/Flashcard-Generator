@@ -35,11 +35,15 @@ jobs:
           echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
           echo "PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/33.0.2:$PATH" >> $GITHUB_ENV
 
-      - name: Install Android SDK Build-Tools and AIDL
+      - name: Accept Android SDK Licenses & Install Required Build-Tools
         run: |
           source $GITHUB_ENV
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
           $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "platforms;android-33" "build-tools;33.0.2" "platform-tools" "cmdline-tools;latest" "tools"
+
+      - name: Verify AIDL Installation
+        run: |
+          source $GITHUB_ENV
           ls -lah $ANDROID_HOME/build-tools/33.0.2/
           ls -lah $ANDROID_HOME/platform-tools/
           which aidl || echo "AIDL still not found!"
@@ -62,8 +66,7 @@ jobs:
 
       - name: Build APK with Buildozer
         run: |
-          command:  y | buildozer android debug
-          buildozer_version: master
+          buildozer -v android debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
