@@ -6,11 +6,11 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v2
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -61,8 +61,10 @@ jobs:
           sed -i "s|^android.sdk_path =.*|android.sdk_path = $ANDROID_HOME|" buildozer.spec
 
       - name: Build APK with Buildozer
-        run: |
-          command: echo y | buildozer -v android debug
+	uses: ArtemSBulgakov/buildozer-action@v1
+        id: buildozer
+        with:
+           command: yes | buildozer android debug
           buildozer_version: master
 
       - name: Upload APK
