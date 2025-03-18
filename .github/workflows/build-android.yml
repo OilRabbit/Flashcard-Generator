@@ -62,7 +62,7 @@ jobs:
 
       - name: Build APK with Buildozer
         run: |
-          command:  yes | buildozer android debug
+          command:  y | buildozer android debug
           buildozer_version: master
 
       - name: Upload APK
