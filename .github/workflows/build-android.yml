@@ -38,19 +38,27 @@ jobs:
       - name: Install Android SDK Build-Tools and AIDL
         run: |
           source $GITHUB_ENV
-          yes | sdkmanager --licenses
-          sdkmanager --install "platforms;android-33" "build-tools;33.0.2" "platform-tools" "cmdline-tools;latest" "tools"
-
-      - name: Verify Android SDK Installation
-        run: |
-          source $GITHUB_ENV
-          ls -lah $ANDROID_HOME/build-tools/33.0.2
-          ls -lah $ANDROID_HOME/platform-tools
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "platforms;android-33" "build-tools;33.0.2" "platform-tools" "cmdline-tools;latest" "tools"
+          ls -lah $ANDROID_HOME/build-tools/33.0.2/
+          ls -lah $ANDROID_HOME/platform-tools/
           which aidl || echo "AIDL still not found!"
+
+      - name: Set Environment Variables
+        run: |
+          export ANDROID_HOME=$HOME/android-sdk
+          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/33.0.2:$PATH
+          echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
+          echo "PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/33.0.2:$PATH" >> $GITHUB_ENV
+          echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
 
       - name: Install Buildozer
         run: |
           pip install --upgrade cython buildozer
+
+      - name: Force Buildozer to Use Correct Android SDK Path
+        run: |
+          sed -i "s|^android.sdk_path =.*|android.sdk_path = $ANDROID_HOME|" buildozer.spec
 
       - name: Build APK with Buildozer
         run: |
