@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:csv/csv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_math_fork/flutter_math.dart';
 
 void main() {
   runApp(FlashcardApp());
@@ -164,8 +165,18 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
   int currentIndex = 0;
   bool showAnswer = false;
 
+  Widget renderContent(String content) {
+    if (content.trim().startsWith('\$\$') && content.trim().endsWith('\$\$')) {
+      String tex = content.trim().substring(2, content.length - 2);
+      return Math.tex(tex, textStyle: TextStyle(fontSize: 18));
+    } else {
+      return Text(content, style: TextStyle(fontSize: 18));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final currentCard = widget.flashcards[currentIndex];
     return Scaffold(
       appBar: AppBar(title: Text('Flashcards')),
       body: Center(
@@ -173,9 +184,9 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text("${currentIndex + 1}/${widget.flashcards.length}"),
-            Text("Chapter: ${widget.flashcards[currentIndex][0]}", style: TextStyle(fontWeight: FontWeight.bold)),
-            Text("Type: ${widget.flashcards[currentIndex][1]}", style: TextStyle(fontWeight: FontWeight.bold)),
-            Text("Difficulty: ${widget.flashcards[currentIndex][2]}", style: TextStyle(fontWeight: FontWeight.bold)),
+            Text("Chapter: ${currentCard[0]}", style: TextStyle(fontWeight: FontWeight.bold)),
+            Text("Type: ${currentCard[1]}", style: TextStyle(fontWeight: FontWeight.bold)),
+            Text("Difficulty: ${currentCard[2]}", style: TextStyle(fontWeight: FontWeight.bold)),
             GestureDetector(
               onTap: () {
                 setState(() {
@@ -185,13 +196,12 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
               child: Card(
                 elevation: 5,
                 child: Container(
-                  width: 300,
+                  width: 500,
                   height: 200,
                   alignment: Alignment.center,
                   padding: EdgeInsets.all(20),
-                  child: Text(
-                    showAnswer ? widget.flashcards[currentIndex][4].toString() : widget.flashcards[currentIndex][3].toString(),
-                    textAlign: TextAlign.center,
+                  child: SingleChildScrollView(
+                    child: renderContent(showAnswer ? currentCard[4].toString() : currentCard[3].toString()),
                   ),
                 ),
               ),
